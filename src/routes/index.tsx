@@ -168,9 +168,20 @@ function TimelineSlider() {
 function Dashboard() {
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [activeCategory, setActiveCategory] = useState<string>("All Data");
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([
+    "labs-april.pdf",
+    "labs-may.pdf",
+  ]);
+  const [trackerConnected, setTrackerConnected] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const dismiss = (id: string) =>
     setDismissed((prev) => new Set(prev).add(id));
   const isShown = (id: string) => !dismissed.has(id);
+  const handleFiles = (list: FileList | null) => {
+    if (!list) return;
+    const names = Array.from(list).map((f) => f.name);
+    setUploadedFiles((prev) => [...prev, ...names]);
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
