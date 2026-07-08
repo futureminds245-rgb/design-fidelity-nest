@@ -35,9 +35,9 @@ export const biomarkers = [
   { icon: Heart, label: "Heart Health", value: "42", unit: "mg/dl", sub: "Apolipoprotein B" },
 ];
 
-import suppGreen from "@/assets/supp-green.png";
-import suppBlue from "@/assets/supp-blue.png";
-import suppOrange from "@/assets/supp-orange.png";
+import suppGreen from "@/assets/supp-green.jpg";
+import suppBlue from "@/assets/supp-blue.jpg";
+import suppOrange from "@/assets/supp-orange.jpg";
 
 export const supplements = [
   { tag: "Best Seller", name: "Ashwa Balance Extract", price: "$24.30", image: suppGreen },
