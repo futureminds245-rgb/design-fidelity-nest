@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ShoppingCart, User, Plus, X, TrendingUp, TrendingDown } from "lucide-react";
 import { DotDigits } from "@/components/DotDigits";
 import { categories, stats, biomarkers, supplements } from "@/lib/dashboard-data";
@@ -76,28 +76,7 @@ function TimelineSlider() {
   const percent = (day / (HEALTH_SERIES.length - 1)) * 100;
 
   return (
-    <div className="relative pt-14 sm:pt-16">
-      {/* Floating pill above thumb */}
-      <div
-        className="pointer-events-none absolute top-0 flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/90 px-3 py-2 shadow-[0_8px_30px_rgba(0,0,0,0.1)] backdrop-blur-xl transition-[left] duration-100 ease-out"
-        style={{ left: `calc(${percent}% * 0.86 + 7%)` }}
-      >
-        {improving ? (
-          <TrendingUp className="h-4 w-4 text-emerald-600" />
-        ) : (
-          <TrendingDown className="h-4 w-4 text-rose-500" />
-        )}
-        <div className="text-xs sm:text-sm leading-tight">
-          <div className="font-medium">
-            {improving ? "Health Improving" : "Health Declining"}
-          </div>
-          <div className="text-[10px] sm:text-xs text-muted-foreground">
-            {improving ? "+" : ""}
-            {delta.toFixed(1)} last 30 days
-          </div>
-        </div>
-      </div>
-
+    <div className="relative pt-20 sm:pt-16">
       <div className="relative flex items-center gap-2 rounded-full bg-card px-4 py-4 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
         <span className="shrink-0 text-[11px] sm:text-xs text-muted-foreground">
           April
@@ -116,7 +95,32 @@ function TimelineSlider() {
               />
             ))}
           </div>
-          {/* Native range input overlaying dots */}
+          {/* Floating pill anchored to thumb, edge-clamped via translateX(-percent%) */}
+          <div
+            className="pointer-events-none absolute -top-16 sm:-top-14 z-10"
+            style={{ left: `${percent}%` }}
+          >
+            <div
+              className="flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-[0_8px_30px_rgba(0,0,0,0.12)] backdrop-blur-xl transition-transform duration-100 ease-out"
+              style={{ transform: `translateX(-${percent}%)` }}
+            >
+              {improving ? (
+                <TrendingUp className="h-4 w-4 shrink-0 text-emerald-600" />
+              ) : (
+                <TrendingDown className="h-4 w-4 shrink-0 text-rose-500" />
+              )}
+              <div className="text-xs sm:text-sm leading-tight whitespace-nowrap">
+                <div className="font-medium">
+                  {improving ? "Health Improving" : "Health Declining"}
+                </div>
+                <div className="text-[10px] sm:text-xs text-muted-foreground">
+                  {improving ? "+" : ""}
+                  {delta.toFixed(1)} last 30 days
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Native range input overlaying dots — full-width touch target */}
           <input
             type="range"
             min={0}
@@ -125,7 +129,7 @@ function TimelineSlider() {
             value={day}
             onChange={(e) => setDay(Number(e.target.value))}
             aria-label="Scrub timeline day"
-            className="timeline-range absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent"
+            className="timeline-range absolute -inset-y-3 inset-x-0 h-[calc(100%+1.5rem)] w-full cursor-pointer appearance-none bg-transparent touch-manipulation"
           />
         </div>
         <span className="shrink-0 text-[11px] sm:text-xs text-muted-foreground">
@@ -137,8 +141,8 @@ function TimelineSlider() {
         .timeline-range::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
-          height: 20px;
-          width: 20px;
+          height: 28px;
+          width: 28px;
           border-radius: 9999px;
           background: white;
           border: 2px solid var(--foreground);
@@ -147,8 +151,8 @@ function TimelineSlider() {
         }
         .timeline-range::-webkit-slider-thumb:active { cursor: grabbing; }
         .timeline-range::-moz-range-thumb {
-          height: 20px;
-          width: 20px;
+          height: 28px;
+          width: 28px;
           border-radius: 9999px;
           background: white;
           border: 2px solid var(--foreground);
@@ -162,6 +166,23 @@ function TimelineSlider() {
 }
 
 function Dashboard() {
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  const [activeCategory, setActiveCategory] = useState<string>("All Data");
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([
+    "labs-april.pdf",
+    "labs-may.pdf",
+  ]);
+  const [trackerConnected, setTrackerConnected] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const dismiss = (id: string) =>
+    setDismissed((prev) => new Set(prev).add(id));
+  const isShown = (id: string) => !dismissed.has(id);
+  const handleFiles = (list: FileList | null) => {
+    if (!list) return;
+    const names = Array.from(list).map((f) => f.name);
+    setUploadedFiles((prev) => [...prev, ...names]);
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Top bar */}
@@ -192,11 +213,15 @@ function Dashboard() {
           <nav className="flex flex-col gap-1.5">
             {categories.map((c) => {
               const Icon = c.icon;
+              const isActive = activeCategory === c.label;
               return (
                 <button
                   key={c.label}
-                  className={`flex items-center justify-between rounded-full px-4 py-3 text-sm transition ${
-                    c.active
+                  onClick={() =>
+                    setActiveCategory(isActive ? "" : c.label)
+                  }
+                  className={`flex min-h-11 items-center justify-between rounded-full px-4 py-3 text-sm transition active:scale-[0.98] ${
+                    isActive
                       ? "bg-card shadow-[0_4px_20px_rgba(0,0,0,0.04)]"
                       : "hover:bg-card/60"
                   }`}
@@ -207,8 +232,19 @@ function Dashboard() {
                   </span>
                   <span className="flex shrink-0 items-center gap-2">
                     {c.value && <Chip>{c.value}</Chip>}
-                    {c.active && (
-                      <X className="h-3.5 w-3.5 text-foreground/40" />
+                    {isActive && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Clear ${c.label} filter`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveCategory("");
+                        }}
+                        className="grid h-6 w-6 place-items-center rounded-full hover:bg-chip"
+                      >
+                        <X className="h-3.5 w-3.5 text-foreground/40" />
+                      </span>
                     )}
                   </span>
                 </button>
@@ -216,25 +252,37 @@ function Dashboard() {
             })}
           </nav>
 
-          <Card className="mt-4 p-5">
-            <div className="mb-3 flex items-start justify-between">
-              <Chip variant="lime">Go Pro</Chip>
-              <X className="h-4 w-4 text-foreground/40" />
-            </div>
-            <div className="text-sm font-semibold">Free Premium Subscription</div>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Get even better understanding of your health data.
-            </p>
-            <div className="mt-4 flex items-end justify-between">
-              <div className="flex items-baseline gap-1">
-                <DotDigits value="30" size={3} gap={1.5} />
-                <span className="ml-1 text-xs text-muted-foreground">Days</span>
+          {isShown("goPro") && (
+            <Card className="mt-4 p-5">
+              <div className="mb-3 flex items-start justify-between">
+                <Chip variant="lime">Go Pro</Chip>
+                <button
+                  onClick={() => dismiss("goPro")}
+                  aria-label="Dismiss Go Pro card"
+                  className="grid h-8 w-8 place-items-center rounded-full hover:bg-chip"
+                >
+                  <X className="h-4 w-4 text-foreground/40" />
+                </button>
               </div>
-              <button className="rounded-full bg-chip px-4 py-1.5 text-xs font-medium">
-                Try it
-              </button>
-            </div>
-          </Card>
+              <div className="text-sm font-semibold">
+                Free Premium Subscription
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Get even better understanding of your health data.
+              </p>
+              <div className="mt-4 flex items-end justify-between">
+                <div className="flex items-baseline gap-1">
+                  <DotDigits value="30" size={3} gap={1.5} />
+                  <span className="ml-1 text-xs text-muted-foreground">
+                    Days
+                  </span>
+                </div>
+                <button className="min-h-9 rounded-full bg-chip px-4 py-1.5 text-xs font-medium active:scale-95">
+                  Try it
+                </button>
+              </div>
+            </Card>
+          )}
         </aside>
 
         {/* Main */}
@@ -264,90 +312,117 @@ function Dashboard() {
           <div className="grid gap-4 sm:gap-6 lg:grid-cols-[1fr_1fr_1.1fr]">
             <GradientCard image={gradientScore} title="Superpower Score" value="70" sub="On Track" />
             <GradientCard image={gradientBio} title="Biological age" value="25" sub="2.5 years younger" />
-            <Card className="p-5 sm:p-6">
-              <div className="mb-4 flex items-start justify-between gap-2">
-                <div className="text-sm sm:text-base font-medium">
-                  Your results are pending
-                </div>
-                <X className="h-4 w-4 shrink-0 text-foreground/40" />
-              </div>
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex min-w-0 flex-col gap-3">
-                  <div className="flex items-baseline gap-1">
-                    <DotDigits value="7-10" size={4} gap={2} />
-                    <span className="ml-2 text-xs text-muted-foreground">Days</span>
+            {isShown("results") && (
+              <Card className="p-5 sm:p-6">
+                <div className="mb-4 flex items-start justify-between gap-2">
+                  <div className="text-sm sm:text-base font-medium">
+                    Your results are pending
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full bg-lime shadow-[0_0_10px_var(--lime)]" />
-                    <div className="h-0.5 w-16 sm:w-24 bg-foreground/10" />
-                    <span className="h-2 w-2 rounded-full bg-foreground/30" />
-                    <span className="h-1.5 w-1.5 rounded-full bg-foreground/20" />
+                  <button
+                    onClick={() => dismiss("results")}
+                    aria-label="Dismiss pending results card"
+                    className="grid h-8 w-8 shrink-0 place-items-center rounded-full hover:bg-chip"
+                  >
+                    <X className="h-4 w-4 text-foreground/40" />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex min-w-0 flex-col gap-3">
+                    <div className="flex items-baseline gap-1">
+                      <DotDigits value="7-10" size={4} gap={2} />
+                      <span className="ml-2 text-xs text-muted-foreground">Days</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="h-3 w-3 rounded-full bg-lime shadow-[0_0_10px_var(--lime)]" />
+                      <div className="h-0.5 w-16 sm:w-24 bg-foreground/10" />
+                      <span className="h-2 w-2 rounded-full bg-foreground/30" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-foreground/20" />
+                    </div>
+                    <p className="max-w-[18ch] text-xs text-muted-foreground">
+                      Until then your lab draw data is processed.
+                    </p>
                   </div>
-                  <p className="max-w-[18ch] text-xs text-muted-foreground">
-                    Until then your lab draw data is processed.
-                  </p>
+                  <div className="grid h-24 w-24 sm:h-28 sm:w-28 shrink-0 place-items-center rounded-full bg-white shadow-inner">
+                    <img
+                      src={vial}
+                      alt="Sample vial"
+                      className="h-20 w-20 sm:h-24 sm:w-24 object-contain"
+                      loading="lazy"
+                    />
+                  </div>
                 </div>
-                <div className="grid h-24 w-24 sm:h-28 sm:w-28 shrink-0 place-items-center rounded-full bg-white shadow-inner">
-                  <img
-                    src={vial}
-                    alt="Sample vial"
-                    className="h-20 w-20 sm:h-24 sm:w-24 object-contain"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </Card>
+              </Card>
+            )}
           </div>
 
           {/* Upload / tracker row */}
           <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
             <Card className="relative overflow-hidden p-5 sm:p-6">
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                onChange={(e) => handleFiles(e.target.files)}
+              />
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-base sm:text-lg font-medium leading-tight">Upload</div>
                   <div className="text-base sm:text-lg font-medium leading-tight">Health Records</div>
                 </div>
-                <button className="grid h-10 w-10 place-items-center rounded-full bg-chip">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  aria-label="Upload health record files"
+                  className="grid h-11 w-11 place-items-center rounded-full bg-chip active:scale-95"
+                >
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
               <div className="mt-6 flex justify-center">
                 <img src={invoices} alt="Existing invoice records" className="h-28 sm:h-32 object-contain" loading="lazy" />
               </div>
-              <div className="mt-4 flex items-center justify-between rounded-full bg-chip px-5 py-3">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="mt-4 flex w-full items-center justify-between rounded-full bg-chip px-5 py-3 text-left active:scale-[0.99]"
+              >
                 <div>
                   <div className="text-sm font-medium">Existing Records</div>
-                  <div className="text-xs text-muted-foreground">2 files</div>
+                  <div className="text-xs text-muted-foreground">
+                    {uploadedFiles.length} file{uploadedFiles.length === 1 ? "" : "s"}
+                  </div>
                 </div>
-              </div>
+                <Plus className="h-4 w-4 text-foreground/50" />
+              </button>
             </Card>
 
-            <div
-              className="relative overflow-hidden rounded-[28px] p-5 sm:p-6 text-white shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
+            <button
+              onClick={() => setTrackerConnected((v) => !v)}
+              aria-pressed={trackerConnected}
+              className="relative block overflow-hidden rounded-[28px] p-5 sm:p-6 text-left text-white shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition active:scale-[0.99]"
               style={{ backgroundImage: `url(${gradientTracker})`, backgroundSize: "cover", backgroundPosition: "center" }}
             >
               <div className="flex items-start justify-between">
                 <div className="text-base sm:text-lg font-medium leading-tight drop-shadow">
-                  <div>Connect</div>
+                  <div>{trackerConnected ? "Connected" : "Connect"}</div>
                   <div>Health Tracker</div>
                 </div>
-                <button className="grid h-10 w-10 place-items-center rounded-full bg-white/30 backdrop-blur">
-                  <Plus className="h-4 w-4" />
-                </button>
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-white/30 backdrop-blur">
+                  <Plus className={`h-4 w-4 transition-transform ${trackerConnected ? "rotate-45" : ""}`} />
+                </span>
               </div>
               <div className="mt-8 flex justify-center">
                 <div className="relative grid h-36 w-36 sm:h-40 sm:w-40 place-items-center">
                   {[0, 1, 2, 3].map((i) => (
                     <span
                       key={i}
-                      className="absolute rounded-full border border-white/40"
+                      className={`absolute rounded-full border border-white/40 ${trackerConnected ? "animate-pulse" : ""}`}
                       style={{ width: `${40 + i * 24}%`, height: `${40 + i * 24}%` }}
                     />
                   ))}
                   <span className="h-3 w-3 rounded-full bg-white shadow-[0_0_20px_rgba(255,255,255,0.9)]" />
                 </div>
               </div>
-            </div>
+            </button>
           </div>
 
           {/* Biomarkers */}
