@@ -301,39 +301,47 @@ function Dashboard() {
           <div className="grid gap-4 sm:gap-6 lg:grid-cols-[1fr_1fr_1.1fr]">
             <GradientCard image={gradientScore} title="Superpower Score" value="70" sub="On Track" />
             <GradientCard image={gradientBio} title="Biological age" value="25" sub="2.5 years younger" />
-            <Card className="p-5 sm:p-6">
-              <div className="mb-4 flex items-start justify-between gap-2">
-                <div className="text-sm sm:text-base font-medium">
-                  Your results are pending
-                </div>
-                <X className="h-4 w-4 shrink-0 text-foreground/40" />
-              </div>
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex min-w-0 flex-col gap-3">
-                  <div className="flex items-baseline gap-1">
-                    <DotDigits value="7-10" size={4} gap={2} />
-                    <span className="ml-2 text-xs text-muted-foreground">Days</span>
+            {isShown("results") && (
+              <Card className="p-5 sm:p-6">
+                <div className="mb-4 flex items-start justify-between gap-2">
+                  <div className="text-sm sm:text-base font-medium">
+                    Your results are pending
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded-full bg-lime shadow-[0_0_10px_var(--lime)]" />
-                    <div className="h-0.5 w-16 sm:w-24 bg-foreground/10" />
-                    <span className="h-2 w-2 rounded-full bg-foreground/30" />
-                    <span className="h-1.5 w-1.5 rounded-full bg-foreground/20" />
+                  <button
+                    onClick={() => dismiss("results")}
+                    aria-label="Dismiss pending results card"
+                    className="grid h-8 w-8 shrink-0 place-items-center rounded-full hover:bg-chip"
+                  >
+                    <X className="h-4 w-4 text-foreground/40" />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex min-w-0 flex-col gap-3">
+                    <div className="flex items-baseline gap-1">
+                      <DotDigits value="7-10" size={4} gap={2} />
+                      <span className="ml-2 text-xs text-muted-foreground">Days</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="h-3 w-3 rounded-full bg-lime shadow-[0_0_10px_var(--lime)]" />
+                      <div className="h-0.5 w-16 sm:w-24 bg-foreground/10" />
+                      <span className="h-2 w-2 rounded-full bg-foreground/30" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-foreground/20" />
+                    </div>
+                    <p className="max-w-[18ch] text-xs text-muted-foreground">
+                      Until then your lab draw data is processed.
+                    </p>
                   </div>
-                  <p className="max-w-[18ch] text-xs text-muted-foreground">
-                    Until then your lab draw data is processed.
-                  </p>
+                  <div className="grid h-24 w-24 sm:h-28 sm:w-28 shrink-0 place-items-center rounded-full bg-white shadow-inner">
+                    <img
+                      src={vial}
+                      alt="Sample vial"
+                      className="h-20 w-20 sm:h-24 sm:w-24 object-contain"
+                      loading="lazy"
+                    />
+                  </div>
                 </div>
-                <div className="grid h-24 w-24 sm:h-28 sm:w-28 shrink-0 place-items-center rounded-full bg-white shadow-inner">
-                  <img
-                    src={vial}
-                    alt="Sample vial"
-                    className="h-20 w-20 sm:h-24 sm:w-24 object-contain"
-                    loading="lazy"
-                  />
-                </div>
-              </div>
-            </Card>
+              </Card>
+            )}
           </div>
 
           {/* Upload / tracker row */}
