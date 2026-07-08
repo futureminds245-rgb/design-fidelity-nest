@@ -76,28 +76,7 @@ function TimelineSlider() {
   const percent = (day / (HEALTH_SERIES.length - 1)) * 100;
 
   return (
-    <div className="relative pt-14 sm:pt-16">
-      {/* Floating pill above thumb */}
-      <div
-        className="pointer-events-none absolute top-0 flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/90 px-3 py-2 shadow-[0_8px_30px_rgba(0,0,0,0.1)] backdrop-blur-xl transition-[left] duration-100 ease-out"
-        style={{ left: `calc(${percent}% * 0.86 + 7%)` }}
-      >
-        {improving ? (
-          <TrendingUp className="h-4 w-4 text-emerald-600" />
-        ) : (
-          <TrendingDown className="h-4 w-4 text-rose-500" />
-        )}
-        <div className="text-xs sm:text-sm leading-tight">
-          <div className="font-medium">
-            {improving ? "Health Improving" : "Health Declining"}
-          </div>
-          <div className="text-[10px] sm:text-xs text-muted-foreground">
-            {improving ? "+" : ""}
-            {delta.toFixed(1)} last 30 days
-          </div>
-        </div>
-      </div>
-
+    <div className="relative pt-20 sm:pt-16">
       <div className="relative flex items-center gap-2 rounded-full bg-card px-4 py-4 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
         <span className="shrink-0 text-[11px] sm:text-xs text-muted-foreground">
           April
@@ -116,7 +95,32 @@ function TimelineSlider() {
               />
             ))}
           </div>
-          {/* Native range input overlaying dots */}
+          {/* Floating pill anchored to thumb, edge-clamped via translateX(-percent%) */}
+          <div
+            className="pointer-events-none absolute -top-16 sm:-top-14 z-10"
+            style={{ left: `${percent}%` }}
+          >
+            <div
+              className="flex items-center gap-2 rounded-2xl bg-white/95 px-3 py-2 shadow-[0_8px_30px_rgba(0,0,0,0.12)] backdrop-blur-xl transition-transform duration-100 ease-out"
+              style={{ transform: `translateX(-${percent}%)` }}
+            >
+              {improving ? (
+                <TrendingUp className="h-4 w-4 shrink-0 text-emerald-600" />
+              ) : (
+                <TrendingDown className="h-4 w-4 shrink-0 text-rose-500" />
+              )}
+              <div className="text-xs sm:text-sm leading-tight whitespace-nowrap">
+                <div className="font-medium">
+                  {improving ? "Health Improving" : "Health Declining"}
+                </div>
+                <div className="text-[10px] sm:text-xs text-muted-foreground">
+                  {improving ? "+" : ""}
+                  {delta.toFixed(1)} last 30 days
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Native range input overlaying dots — full-width touch target */}
           <input
             type="range"
             min={0}
@@ -125,7 +129,7 @@ function TimelineSlider() {
             value={day}
             onChange={(e) => setDay(Number(e.target.value))}
             aria-label="Scrub timeline day"
-            className="timeline-range absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent"
+            className="timeline-range absolute -inset-y-3 inset-x-0 h-[calc(100%+1.5rem)] w-full cursor-pointer appearance-none bg-transparent touch-manipulation"
           />
         </div>
         <span className="shrink-0 text-[11px] sm:text-xs text-muted-foreground">
@@ -137,8 +141,8 @@ function TimelineSlider() {
         .timeline-range::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
-          height: 20px;
-          width: 20px;
+          height: 28px;
+          width: 28px;
           border-radius: 9999px;
           background: white;
           border: 2px solid var(--foreground);
@@ -147,8 +151,8 @@ function TimelineSlider() {
         }
         .timeline-range::-webkit-slider-thumb:active { cursor: grabbing; }
         .timeline-range::-moz-range-thumb {
-          height: 20px;
-          width: 20px;
+          height: 28px;
+          width: 28px;
           border-radius: 9999px;
           background: white;
           border: 2px solid var(--foreground);
