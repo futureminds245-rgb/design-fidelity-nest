@@ -166,6 +166,12 @@ function TimelineSlider() {
 }
 
 function Dashboard() {
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  const [activeCategory, setActiveCategory] = useState<string>("All Data");
+  const dismiss = (id: string) =>
+    setDismissed((prev) => new Set(prev).add(id));
+  const isShown = (id: string) => !dismissed.has(id);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Top bar */}
