@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ShoppingCart, User, Plus, X, TrendingUp, TrendingDown } from "lucide-react";
 import { DotDigits } from "@/components/DotDigits";
 import { categories, stats, biomarkers, supplements } from "@/lib/dashboard-data";
