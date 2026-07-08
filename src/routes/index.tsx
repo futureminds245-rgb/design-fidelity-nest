@@ -202,11 +202,15 @@ function Dashboard() {
           <nav className="flex flex-col gap-1.5">
             {categories.map((c) => {
               const Icon = c.icon;
+              const isActive = activeCategory === c.label;
               return (
                 <button
                   key={c.label}
-                  className={`flex items-center justify-between rounded-full px-4 py-3 text-sm transition ${
-                    c.active
+                  onClick={() =>
+                    setActiveCategory(isActive ? "" : c.label)
+                  }
+                  className={`flex min-h-11 items-center justify-between rounded-full px-4 py-3 text-sm transition active:scale-[0.98] ${
+                    isActive
                       ? "bg-card shadow-[0_4px_20px_rgba(0,0,0,0.04)]"
                       : "hover:bg-card/60"
                   }`}
@@ -217,8 +221,19 @@ function Dashboard() {
                   </span>
                   <span className="flex shrink-0 items-center gap-2">
                     {c.value && <Chip>{c.value}</Chip>}
-                    {c.active && (
-                      <X className="h-3.5 w-3.5 text-foreground/40" />
+                    {isActive && (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`Clear ${c.label} filter`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveCategory("");
+                        }}
+                        className="grid h-6 w-6 place-items-center rounded-full hover:bg-chip"
+                      >
+                        <X className="h-3.5 w-3.5 text-foreground/40" />
+                      </span>
                     )}
                   </span>
                 </button>
@@ -226,25 +241,37 @@ function Dashboard() {
             })}
           </nav>
 
-          <Card className="mt-4 p-5">
-            <div className="mb-3 flex items-start justify-between">
-              <Chip variant="lime">Go Pro</Chip>
-              <X className="h-4 w-4 text-foreground/40" />
-            </div>
-            <div className="text-sm font-semibold">Free Premium Subscription</div>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Get even better understanding of your health data.
-            </p>
-            <div className="mt-4 flex items-end justify-between">
-              <div className="flex items-baseline gap-1">
-                <DotDigits value="30" size={3} gap={1.5} />
-                <span className="ml-1 text-xs text-muted-foreground">Days</span>
+          {isShown("goPro") && (
+            <Card className="mt-4 p-5">
+              <div className="mb-3 flex items-start justify-between">
+                <Chip variant="lime">Go Pro</Chip>
+                <button
+                  onClick={() => dismiss("goPro")}
+                  aria-label="Dismiss Go Pro card"
+                  className="grid h-8 w-8 place-items-center rounded-full hover:bg-chip"
+                >
+                  <X className="h-4 w-4 text-foreground/40" />
+                </button>
               </div>
-              <button className="rounded-full bg-chip px-4 py-1.5 text-xs font-medium">
-                Try it
-              </button>
-            </div>
-          </Card>
+              <div className="text-sm font-semibold">
+                Free Premium Subscription
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Get even better understanding of your health data.
+              </p>
+              <div className="mt-4 flex items-end justify-between">
+                <div className="flex items-baseline gap-1">
+                  <DotDigits value="30" size={3} gap={1.5} />
+                  <span className="ml-1 text-xs text-muted-foreground">
+                    Days
+                  </span>
+                </div>
+                <button className="min-h-9 rounded-full bg-chip px-4 py-1.5 text-xs font-medium active:scale-95">
+                  Try it
+                </button>
+              </div>
+            </Card>
+          )}
         </aside>
 
         {/* Main */}
