@@ -358,52 +358,71 @@ function Dashboard() {
           {/* Upload / tracker row */}
           <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
             <Card className="relative overflow-hidden p-5 sm:p-6">
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                onChange={(e) => handleFiles(e.target.files)}
+              />
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-base sm:text-lg font-medium leading-tight">Upload</div>
                   <div className="text-base sm:text-lg font-medium leading-tight">Health Records</div>
                 </div>
-                <button className="grid h-10 w-10 place-items-center rounded-full bg-chip">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  aria-label="Upload health record files"
+                  className="grid h-11 w-11 place-items-center rounded-full bg-chip active:scale-95"
+                >
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
               <div className="mt-6 flex justify-center">
                 <img src={invoices} alt="Existing invoice records" className="h-28 sm:h-32 object-contain" loading="lazy" />
               </div>
-              <div className="mt-4 flex items-center justify-between rounded-full bg-chip px-5 py-3">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="mt-4 flex w-full items-center justify-between rounded-full bg-chip px-5 py-3 text-left active:scale-[0.99]"
+              >
                 <div>
                   <div className="text-sm font-medium">Existing Records</div>
-                  <div className="text-xs text-muted-foreground">2 files</div>
+                  <div className="text-xs text-muted-foreground">
+                    {uploadedFiles.length} file{uploadedFiles.length === 1 ? "" : "s"}
+                  </div>
                 </div>
-              </div>
+                <Plus className="h-4 w-4 text-foreground/50" />
+              </button>
             </Card>
 
-            <div
-              className="relative overflow-hidden rounded-[28px] p-5 sm:p-6 text-white shadow-[0_8px_30px_rgba(0,0,0,0.06)]"
+            <button
+              onClick={() => setTrackerConnected((v) => !v)}
+              aria-pressed={trackerConnected}
+              className="relative block overflow-hidden rounded-[28px] p-5 sm:p-6 text-left text-white shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition active:scale-[0.99]"
               style={{ backgroundImage: `url(${gradientTracker})`, backgroundSize: "cover", backgroundPosition: "center" }}
             >
               <div className="flex items-start justify-between">
                 <div className="text-base sm:text-lg font-medium leading-tight drop-shadow">
-                  <div>Connect</div>
+                  <div>{trackerConnected ? "Connected" : "Connect"}</div>
                   <div>Health Tracker</div>
                 </div>
-                <button className="grid h-10 w-10 place-items-center rounded-full bg-white/30 backdrop-blur">
-                  <Plus className="h-4 w-4" />
-                </button>
+                <span className="grid h-11 w-11 place-items-center rounded-full bg-white/30 backdrop-blur">
+                  <Plus className={`h-4 w-4 transition-transform ${trackerConnected ? "rotate-45" : ""}`} />
+                </span>
               </div>
               <div className="mt-8 flex justify-center">
                 <div className="relative grid h-36 w-36 sm:h-40 sm:w-40 place-items-center">
                   {[0, 1, 2, 3].map((i) => (
                     <span
                       key={i}
-                      className="absolute rounded-full border border-white/40"
+                      className={`absolute rounded-full border border-white/40 ${trackerConnected ? "animate-pulse" : ""}`}
                       style={{ width: `${40 + i * 24}%`, height: `${40 + i * 24}%` }}
                     />
                   ))}
                   <span className="h-3 w-3 rounded-full bg-white shadow-[0_0_20px_rgba(255,255,255,0.9)]" />
                 </div>
               </div>
-            </div>
+            </button>
           </div>
 
           {/* Biomarkers */}
