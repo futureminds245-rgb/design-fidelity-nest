@@ -321,7 +321,7 @@ function Dashboard() {
             <GradientCard image={gradientScore} title="Superpower Score" value="70" sub="On Track" />
             <GradientCard image={gradientBio} title="Biological age" value="25" sub="2.5 years younger" />
             {isShown("results") && (
-              <Card className="p-5 sm:p-6">
+              <Card className="p-5 sm:p-6 md:col-span-2 xl:col-span-1">
                 <div className="mb-4 flex items-start justify-between gap-2">
                   <div className="text-sm sm:text-base font-medium">
                     Your results are pending
@@ -364,7 +364,7 @@ function Dashboard() {
           </div>
 
           {/* Upload / tracker row */}
-          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-5 lg:gap-6 md:grid-cols-2">
             <Card className="relative overflow-hidden p-5 sm:p-6">
               <input
                 ref={fileInputRef}
@@ -446,7 +446,7 @@ function Dashboard() {
                 See All
               </button>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 xs:grid-cols-2 sm:gap-5 lg:grid-cols-2 xl:grid-cols-3">
               {biomarkers.map((b, i) => {
                 const Icon = b.icon;
                 return (
@@ -490,7 +490,7 @@ function Dashboard() {
                 See All
               </button>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 xs:grid-cols-2 sm:gap-5 lg:grid-cols-2 xl:grid-cols-3">
               {supplements.map((s, i) => (
                 <Card key={i} className="p-5">
                   <div className="mb-2 flex items-start justify-between">
