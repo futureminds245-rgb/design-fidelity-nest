@@ -214,7 +214,6 @@ function Dashboard() {
           </div>
 
           <nav className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:flex-col lg:gap-1.5 lg:overflow-visible lg:px-0">
-
             {categories.map((c) => {
               const Icon = c.icon;
               const isActive = activeCategory === c.label;
@@ -224,12 +223,13 @@ function Dashboard() {
                   onClick={() =>
                     setActiveCategory(isActive ? "" : c.label)
                   }
-                  className={`flex min-h-11 items-center justify-between rounded-full px-4 py-3 text-sm transition active:scale-[0.98] ${
+                  className={`flex min-h-11 shrink-0 snap-start items-center justify-between gap-2 rounded-full px-4 py-3 text-sm transition active:scale-[0.98] lg:w-full lg:shrink ${
                     isActive
                       ? "bg-card shadow-[0_4px_20px_rgba(0,0,0,0.04)]"
-                      : "hover:bg-card/60"
+                      : "bg-card/50 lg:bg-transparent hover:bg-card/60"
                   }`}
                 >
+
                   <span className="flex min-w-0 items-center gap-3">
                     <Icon className="h-4 w-4 shrink-0 text-foreground/60" />
                     <span className="truncate font-medium">{c.label}</span>
