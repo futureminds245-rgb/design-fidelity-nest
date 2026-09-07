@@ -82,12 +82,14 @@ function TimelineSlider() {
           April
         </span>
         <div className="relative flex-1">
-          {/* Dots */}
+          {/* Dots — thinned out on narrow screens */}
           <div className="flex items-center justify-between px-1">
             {DOT_COLORS.map((c, i) => (
               <span
                 key={i}
-                className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full ${c}`}
+                className={`h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2 ${c} ${
+                  i % 3 !== 0 ? "hidden xs:inline-block" : ""
+                } ${i % 2 !== 0 ? "xs:max-sm:hidden" : ""}`}
                 style={{
                   opacity:
                     i === day ? 1 : 0.35 + Math.abs(HEALTH_SERIES[i]) / 12,
@@ -95,6 +97,7 @@ function TimelineSlider() {
               />
             ))}
           </div>
+
           {/* Floating pill anchored to thumb, edge-clamped via translateX(-percent%) */}
           <div
             className="pointer-events-none absolute -top-16 sm:-top-14 z-10"
