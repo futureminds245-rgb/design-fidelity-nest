@@ -203,17 +203,18 @@ function Dashboard() {
         </div>
       </header>
 
-      <div className="grid gap-6 px-4 pb-10 pt-5 sm:px-6 sm:pt-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-10">
+      <div className="mx-auto grid w-full max-w-[1600px] gap-5 px-4 pb-10 pt-5 sm:gap-6 sm:px-6 sm:pt-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:px-8 xl:grid-cols-[300px_minmax(0,1fr)] xl:px-10">
         {/* Sidebar */}
-        <aside className="flex flex-col gap-3">
-          <div className="flex items-baseline gap-6 px-2 pb-2">
-            <h2 className="text-xl sm:text-2xl font-semibold">Data</h2>
-            <h2 className="text-xl sm:text-2xl font-semibold text-muted-foreground/50">
+        <aside className="flex min-w-0 flex-col gap-3">
+          <div className="flex items-baseline gap-6 px-2 pb-1">
+            <h2 className="text-xl font-semibold sm:text-2xl">Data</h2>
+            <h2 className="text-xl font-semibold text-muted-foreground/50 sm:text-2xl">
               Records
             </h2>
           </div>
 
-          <nav className="flex flex-col gap-1.5">
+          <nav className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:flex-col lg:gap-1.5 lg:overflow-visible lg:px-0">
+
             {categories.map((c) => {
               const Icon = c.icon;
               const isActive = activeCategory === c.label;
