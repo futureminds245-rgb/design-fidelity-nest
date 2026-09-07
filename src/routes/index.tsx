@@ -290,15 +290,18 @@ function Dashboard() {
         </aside>
 
         {/* Main */}
-        <main className="flex min-w-0 flex-col gap-6">
-          <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight">
+        <main className="flex min-w-0 flex-col gap-5 sm:gap-6">
+          <h1 className="text-[clamp(1.75rem,7vw,3.25rem)] font-semibold leading-[1.05] tracking-tight">
             Sophia Caldwell
           </h1>
 
           {/* Stats row */}
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-4 sm:gap-x-8">
+          <div className="-mx-4 flex items-center gap-x-5 gap-y-4 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:gap-x-8 sm:overflow-visible sm:px-0">
             {stats.map((s) => (
-              <div key={s.label} className="flex items-center gap-2 sm:gap-3">
+              <div
+                key={s.label}
+                className="flex shrink-0 items-center gap-2 sm:gap-3"
+              >
                 <ResponsiveDots value={s.value} />
                 {s.accent ? (
                   <Chip variant="lime">{s.label}</Chip>
@@ -313,7 +316,8 @@ function Dashboard() {
           <TimelineSlider />
 
           {/* Gradient cards row */}
-          <div className="grid gap-4 sm:gap-6 lg:grid-cols-[1fr_1fr_1.1fr]">
+          <div className="grid gap-4 sm:gap-5 md:grid-cols-2 lg:gap-6 xl:grid-cols-[1fr_1fr_1.1fr]">
+
             <GradientCard image={gradientScore} title="Superpower Score" value="70" sub="On Track" />
             <GradientCard image={gradientBio} title="Biological age" value="25" sub="2.5 years younger" />
             {isShown("results") && (
