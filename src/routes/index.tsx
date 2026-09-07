@@ -540,7 +540,7 @@ function GradientCard({
 }) {
   return (
     <div
-      className="relative flex min-h-[220px] sm:min-h-[240px] flex-col items-center justify-between overflow-hidden rounded-[28px] p-5 sm:p-6 text-foreground shadow-[0_8px_30px_rgba(0,0,0,0.05)]"
+      className="relative flex min-h-[190px] flex-col items-center justify-between overflow-hidden rounded-[28px] p-5 text-foreground shadow-[0_8px_30px_rgba(0,0,0,0.05)] xs:min-h-[220px] sm:min-h-[240px] sm:p-6"
       style={{
         backgroundImage: `url(${image})`,
         backgroundSize: "cover",
@@ -548,10 +548,13 @@ function GradientCard({
       }}
     >
       <div className="text-sm font-medium text-foreground/70">{title}</div>
-      <div className="flex flex-col items-center gap-1">
-        <DotDigits value={value} size={6} gap={3} color="rgba(255,255,255,0.95)" />
-        <div className="mt-2 text-sm font-medium text-foreground/80">{sub}</div>
+      <div className="flex min-w-0 flex-col items-center gap-1">
+        <span className="inline-block origin-center scale-75 xs:scale-90 sm:scale-100">
+          <DotDigits value={value} size={6} gap={3} color="rgba(255,255,255,0.95)" />
+        </span>
+        <div className="mt-2 text-center text-sm font-medium text-foreground/80">{sub}</div>
       </div>
+
       <div className="h-4" />
     </div>
   );
