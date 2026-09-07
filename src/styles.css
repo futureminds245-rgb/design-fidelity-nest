@@ -34,10 +34,12 @@
   --color-lime: var(--lime);
   --color-lime-foreground: var(--lime-foreground);
   --color-chip: var(--chip);
+  --breakpoint-xs: 24rem;
   --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Nova Mono", ui-monospace, monospace;
 }
+
 
 :root {
   --radius: 1.5rem;

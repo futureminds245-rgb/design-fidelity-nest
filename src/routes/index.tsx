@@ -82,12 +82,14 @@ function TimelineSlider() {
           April
         </span>
         <div className="relative flex-1">
-          {/* Dots */}
+          {/* Dots — thinned out on narrow screens */}
           <div className="flex items-center justify-between px-1">
             {DOT_COLORS.map((c, i) => (
               <span
                 key={i}
-                className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full ${c}`}
+                className={`h-1.5 w-1.5 rounded-full sm:h-2 sm:w-2 ${c} ${
+                  i % 3 !== 0 ? "hidden xs:inline-block" : ""
+                } ${i % 2 !== 0 ? "xs:max-sm:hidden" : ""}`}
                 style={{
                   opacity:
                     i === day ? 1 : 0.35 + Math.abs(HEALTH_SERIES[i]) / 12,
@@ -95,6 +97,7 @@ function TimelineSlider() {
               />
             ))}
           </div>
+
           {/* Floating pill anchored to thumb, edge-clamped via translateX(-percent%) */}
           <div
             className="pointer-events-none absolute -top-16 sm:-top-14 z-10"
@@ -200,17 +203,17 @@ function Dashboard() {
         </div>
       </header>
 
-      <div className="grid gap-6 px-4 pb-10 pt-5 sm:px-6 sm:pt-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-10">
+      <div className="mx-auto grid w-full max-w-[1600px] gap-5 px-4 pb-10 pt-5 sm:gap-6 sm:px-6 sm:pt-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:px-8 xl:grid-cols-[300px_minmax(0,1fr)] xl:px-10">
         {/* Sidebar */}
-        <aside className="flex flex-col gap-3">
-          <div className="flex items-baseline gap-6 px-2 pb-2">
-            <h2 className="text-xl sm:text-2xl font-semibold">Data</h2>
-            <h2 className="text-xl sm:text-2xl font-semibold text-muted-foreground/50">
+        <aside className="flex min-w-0 flex-col gap-3">
+          <div className="flex items-baseline gap-6 px-2 pb-1">
+            <h2 className="text-xl font-semibold sm:text-2xl">Data</h2>
+            <h2 className="text-xl font-semibold text-muted-foreground/50 sm:text-2xl">
               Records
             </h2>
           </div>
 
-          <nav className="flex flex-col gap-1.5">
+          <nav className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:flex-col lg:gap-1.5 lg:overflow-visible lg:px-0">
             {categories.map((c) => {
               const Icon = c.icon;
               const isActive = activeCategory === c.label;
@@ -220,12 +223,13 @@ function Dashboard() {
                   onClick={() =>
                     setActiveCategory(isActive ? "" : c.label)
                   }
-                  className={`flex min-h-11 items-center justify-between rounded-full px-4 py-3 text-sm transition active:scale-[0.98] ${
+                  className={`flex min-h-11 shrink-0 snap-start items-center justify-between gap-2 rounded-full px-4 py-3 text-sm transition active:scale-[0.98] lg:w-full lg:shrink ${
                     isActive
                       ? "bg-card shadow-[0_4px_20px_rgba(0,0,0,0.04)]"
-                      : "hover:bg-card/60"
+                      : "bg-card/50 lg:bg-transparent hover:bg-card/60"
                   }`}
                 >
+
                   <span className="flex min-w-0 items-center gap-3">
                     <Icon className="h-4 w-4 shrink-0 text-foreground/60" />
                     <span className="truncate font-medium">{c.label}</span>
@@ -286,15 +290,18 @@ function Dashboard() {
         </aside>
 
         {/* Main */}
-        <main className="flex min-w-0 flex-col gap-6">
-          <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight">
+        <main className="flex min-w-0 flex-col gap-5 sm:gap-6">
+          <h1 className="text-[clamp(1.75rem,7vw,3.25rem)] font-semibold leading-[1.05] tracking-tight">
             Sophia Caldwell
           </h1>
 
           {/* Stats row */}
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-4 sm:gap-x-8">
+          <div className="-mx-4 flex items-center gap-x-5 gap-y-4 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:flex-wrap sm:gap-x-8 sm:overflow-visible sm:px-0">
             {stats.map((s) => (
-              <div key={s.label} className="flex items-center gap-2 sm:gap-3">
+              <div
+                key={s.label}
+                className="flex shrink-0 items-center gap-2 sm:gap-3"
+              >
                 <ResponsiveDots value={s.value} />
                 {s.accent ? (
                   <Chip variant="lime">{s.label}</Chip>
@@ -309,11 +316,12 @@ function Dashboard() {
           <TimelineSlider />
 
           {/* Gradient cards row */}
-          <div className="grid gap-4 sm:gap-6 lg:grid-cols-[1fr_1fr_1.1fr]">
+          <div className="grid gap-4 sm:gap-5 md:grid-cols-2 lg:gap-6 xl:grid-cols-[1fr_1fr_1.1fr]">
+
             <GradientCard image={gradientScore} title="Superpower Score" value="70" sub="On Track" />
             <GradientCard image={gradientBio} title="Biological age" value="25" sub="2.5 years younger" />
             {isShown("results") && (
-              <Card className="p-5 sm:p-6">
+              <Card className="p-5 sm:p-6 md:col-span-2 xl:col-span-1">
                 <div className="mb-4 flex items-start justify-between gap-2">
                   <div className="text-sm sm:text-base font-medium">
                     Your results are pending
@@ -356,7 +364,7 @@ function Dashboard() {
           </div>
 
           {/* Upload / tracker row */}
-          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-5 lg:gap-6 md:grid-cols-2">
             <Card className="relative overflow-hidden p-5 sm:p-6">
               <input
                 ref={fileInputRef}
@@ -438,7 +446,7 @@ function Dashboard() {
                 See All
               </button>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 xs:grid-cols-2 sm:gap-5 lg:grid-cols-2 xl:grid-cols-3">
               {biomarkers.map((b, i) => {
                 const Icon = b.icon;
                 return (
@@ -482,7 +490,7 @@ function Dashboard() {
                 See All
               </button>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 xs:grid-cols-2 sm:gap-5 lg:grid-cols-2 xl:grid-cols-3">
               {supplements.map((s, i) => (
                 <Card key={i} className="p-5">
                   <div className="mb-2 flex items-start justify-between">
@@ -532,7 +540,7 @@ function GradientCard({
 }) {
   return (
     <div
-      className="relative flex min-h-[220px] sm:min-h-[240px] flex-col items-center justify-between overflow-hidden rounded-[28px] p-5 sm:p-6 text-foreground shadow-[0_8px_30px_rgba(0,0,0,0.05)]"
+      className="relative flex min-h-[190px] flex-col items-center justify-between overflow-hidden rounded-[28px] p-5 text-foreground shadow-[0_8px_30px_rgba(0,0,0,0.05)] xs:min-h-[220px] sm:min-h-[240px] sm:p-6"
       style={{
         backgroundImage: `url(${image})`,
         backgroundSize: "cover",
@@ -540,10 +548,13 @@ function GradientCard({
       }}
     >
       <div className="text-sm font-medium text-foreground/70">{title}</div>
-      <div className="flex flex-col items-center gap-1">
-        <DotDigits value={value} size={6} gap={3} color="rgba(255,255,255,0.95)" />
-        <div className="mt-2 text-sm font-medium text-foreground/80">{sub}</div>
+      <div className="flex min-w-0 flex-col items-center gap-1">
+        <span className="inline-block origin-center scale-75 xs:scale-90 sm:scale-100">
+          <DotDigits value={value} size={6} gap={3} color="rgba(255,255,255,0.95)" />
+        </span>
+        <div className="mt-2 text-center text-sm font-medium text-foreground/80">{sub}</div>
       </div>
+
       <div className="h-4" />
     </div>
   );
